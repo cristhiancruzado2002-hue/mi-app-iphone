@@ -9,84 +9,84 @@
 
 <style>
 body{
-    margin:0;
-    font-family:Arial;
-    background:linear-gradient(135deg,#0a1a2f,#1c2f4a);
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0a1a2f,#1c2f4a);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
 .app{
-    width:380px;
-    background:#2c3e50;
-    padding:20px;
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+width:380px;
+background:#2c3e50;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
 }
 
 .logo{
-    width:70px;
-    display:block;
-    margin:auto;
+width:70px;
+display:block;
+margin:auto;
 }
 
 h1{text-align:center;}
 
 .menu{
-    display:flex;
-    flex-wrap:wrap;
-    gap:5px;
-    justify-content:center;
+display:flex;
+gap:5px;
 }
 
 .menu button{
-    flex:1 1 30%;
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    background:#3498db;
-    color:white;
-    cursor:pointer;
-}
-
-.activo{
-    background:#1abc9c !important;
+flex:1;
+padding:10px;
+border:none;
+border-radius:10px;
+background:#3498db;
+color:white;
+cursor:pointer;
 }
 
 input,select,textarea{
-    width:100%;
-    margin:5px 0;
-    padding:8px;
-    border:none;
-    border-radius:8px;
+width:100%;
+margin:5px 0;
+padding:8px;
+border:none;
+border-radius:8px;
 }
 
 .btn{
-    background:#27ae60;
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    color:white;
-    width:100%;
-    margin-top:5px;
+background:#27ae60;
+padding:10px;
+border:none;
+border-radius:10px;
+color:white;
+width:100%;
+margin-top:5px;
 }
 
 .seccion{
-    display:none;
-    margin-top:10px;
+display:none;
+margin-top:10px;
 }
 
 .lista{
-    background:#1c2833;
-    padding:10px;
-    border-radius:10px;
-    margin-top:10px;
-    max-height:150px;
-    overflow:auto;
-    font-size:12px;
+background:#1c2833;
+padding:10px;
+border-radius:10px;
+margin-top:10px;
+max-height:150px;
+overflow:auto;
+font-size:12px;
+}
+
+img.preview{
+width:100%;
+margin-top:5px;
+border-radius:10px;
 }
 </style>
 </head>
@@ -100,8 +100,8 @@ input,select,textarea{
 
 <div class="menu">
 <button onclick="mostrar('personal')">Personal</button>
-<button onclick="mostrar('inspeccion')">Inspección</button>
-<button onclick="mostrar('reporte')">Reportes</button>
+<button onclick="mostrar('insp')">Inspección</button>
+<button onclick="mostrar('rep')">Reporte</button>
 </div>
 
 <!-- PERSONAL -->
@@ -118,8 +118,8 @@ input,select,textarea{
 </div>
 
 <!-- INSPECCION -->
-<div id="inspeccion" class="seccion">
-<h3>Inspección SST</h3>
+<div id="insp" class="seccion">
+<h3>Inspección</h3>
 
 <input id="areaIns" placeholder="Área">
 <select id="estado">
@@ -129,13 +129,20 @@ input,select,textarea{
 
 <textarea id="obs" placeholder="Observación"></textarea>
 
-<button class="btn" onclick="guardarInspeccion()">Guardar</button>
+<input type="file" accept="image/*" id="foto">
 
-<div class="lista" id="listaInspeccion"></div>
+<button class="btn" onclick="obtenerGPS()">Obtener ubicación</button>
+<p id="gps"></p>
+
+<button class="btn" onclick="guardarInspeccion()">Guardar inspección</button>
+
+<img id="preview" class="preview">
+
+<div class="lista" id="listaIns"></div>
 </div>
 
 <!-- REPORTE -->
-<div id="reporte" class="seccion">
+<div id="rep" class="seccion">
 <h3>Reporte</h3>
 <button class="btn" onclick="generarReporte()">Generar</button>
 <textarea id="salida" style="height:150px;"></textarea>
@@ -145,6 +152,7 @@ input,select,textarea{
 
 <script>
 
+/* NAV */
 function mostrar(id){
 document.querySelectorAll('.seccion').forEach(s=>s.style.display='none');
 document.getElementById(id).style.display='block';
@@ -152,64 +160,77 @@ document.getElementById(id).style.display='block';
 
 /* PERSONAL */
 function guardarPersonal(){
-let data={
+let lista=JSON.parse(localStorage.getItem("p")||"[]");
+
+lista.push({
 nombre:nombre.value,
 dni:dni.value,
 cargo:cargo.value,
 area:area.value
-};
+});
 
-let lista=JSON.parse(localStorage.getItem("personal")||"[]");
-lista.push(data);
-localStorage.setItem("personal",JSON.stringify(lista));
-
+localStorage.setItem("p",JSON.stringify(lista));
 cargarPersonal();
 }
 
 function cargarPersonal(){
-let lista=JSON.parse(localStorage.getItem("personal")||"[]");
-
+let lista=JSON.parse(localStorage.getItem("p")||"[]");
 listaPersonal.innerHTML="";
 
 lista.forEach((p,i)=>{
 listaPersonal.innerHTML+=`
-<div>
-${p.nombre} - ${p.cargo}
-<button onclick="eliminarPersonal(${i})">X</button>
-</div>`;
+<div>${p.nombre} - ${p.cargo}</div>`;
 });
 }
 
-function eliminarPersonal(i){
-let lista=JSON.parse(localStorage.getItem("personal"));
-lista.splice(i,1);
-localStorage.setItem("personal",JSON.stringify(lista));
-cargarPersonal();
+/* GPS */
+let ubicacion="";
+
+function obtenerGPS(){
+navigator.geolocation.getCurrentPosition(pos=>{
+ubicacion=pos.coords.latitude+","+pos.coords.longitude;
+gps.innerText="Ubicación: "+ubicacion;
+});
 }
+
+/* FOTO */
+let imagenBase64="";
+
+foto.addEventListener("change",()=>{
+let file=foto.files[0];
+let reader=new FileReader();
+
+reader.onload=function(e){
+imagenBase64=e.target.result;
+preview.src=imagenBase64;
+}
+
+reader.readAsDataURL(file);
+});
 
 /* INSPECCION */
 function guardarInspeccion(){
-let data={
+let lista=JSON.parse(localStorage.getItem("i")||"[]");
+
+lista.push({
 area:areaIns.value,
 estado:estado.value,
 obs:obs.value,
-fecha:new Date().toLocaleString()
-};
+fecha:new Date().toLocaleString(),
+gps:ubicacion,
+foto:imagenBase64
+});
 
-let lista=JSON.parse(localStorage.getItem("insp")||"[]");
-lista.push(data);
-localStorage.setItem("insp",JSON.stringify(lista));
-
-cargarInspeccion();
+localStorage.setItem("i",JSON.stringify(lista));
+cargarIns();
 }
 
-function cargarInspeccion(){
-let lista=JSON.parse(localStorage.getItem("insp")||"[]");
-
-listaInspeccion.innerHTML="";
+function cargarIns(){
+let lista=JSON.parse(localStorage.getItem("i")||"[]");
+listaIns.innerHTML="";
 
 lista.forEach(i=>{
-listaInspeccion.innerHTML+=`
+listaIns.innerHTML+=`
 <div>
 ${i.area} - ${i.estado}
 </div>`;
@@ -218,7 +239,7 @@ ${i.area} - ${i.estado}
 
 /* REPORTE */
 function generarReporte(){
-let datos=JSON.parse(localStorage.getItem("insp")||"[]");
+let datos=JSON.parse(localStorage.getItem("i")||"[]");
 
 let txt="";
 
@@ -227,6 +248,7 @@ txt+=`N°${i+1}
 Área:${d.area}
 Estado:${d.estado}
 Obs:${d.obs}
+GPS:${d.gps}
 Fecha:${d.fecha}
 
 `;
@@ -237,7 +259,7 @@ salida.value=txt;
 
 /* INIT */
 cargarPersonal();
-cargarInspeccion();
+cargarIns();
 
 </script>
 
