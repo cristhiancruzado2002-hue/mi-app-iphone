@@ -3,91 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSOMA PRO</title>
+<title>SSOMA PRO FINAL</title>
 
 <link rel="icon" href="icono.png">
 
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- FIREBASE -->
+<script type="module">
+
+// 🔴 PEGA AQUÍ TU CONFIG REAL
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_DOMINIO",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_BUCKET",
+  messagingSenderId: "TU_ID",
+  appId: "TU_APP_ID"
+};
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// LOGIN AUTOMÁTICO
+signInAnonymously(auth);
+
+window.db = db;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+window.collection = collection;
+
+</script>
+
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:linear-gradient(135deg,#0a1a2f,#1c2f4a);
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
-
-.app{
-width:380px;
-background:#2c3e50;
-padding:20px;
-border-radius:20px;
-box-shadow:0 10px 30px rgba(0,0,0,0.5);
-}
-
-.logo{
-width:70px;
-display:block;
-margin:auto;
-}
-
-h1{text-align:center;}
-
-.menu{
-display:flex;
-gap:5px;
-}
-
-.menu button{
-flex:1;
-padding:10px;
-border:none;
-border-radius:10px;
-background:#3498db;
-color:white;
-cursor:pointer;
-}
-
-input,select,textarea{
-width:100%;
-margin:5px 0;
-padding:8px;
-border:none;
-border-radius:8px;
-}
-
-.btn{
-background:#27ae60;
-padding:10px;
-border:none;
-border-radius:10px;
-color:white;
-width:100%;
-margin-top:5px;
-}
-
-.seccion{
-display:none;
-margin-top:10px;
-}
-
-.lista{
-background:#1c2833;
-padding:10px;
-border-radius:10px;
-margin-top:10px;
-max-height:150px;
-overflow:auto;
-font-size:12px;
-}
-
-img.preview{
-width:100%;
-margin-top:5px;
-border-radius:10px;
-}
+body{margin:0;font-family:Arial;background:#0f172a;color:white;}
+.app{max-width:420px;margin:auto;padding:15px;}
+input,textarea,select,button{width:100%;margin:5px 0;padding:10px;border-radius:10px;border:none;}
+button{background:#22c55e;}
+.card{background:#1e293b;padding:10px;border-radius:10px;margin-top:10px;}
 </style>
 </head>
 
@@ -95,171 +54,67 @@ border-radius:10px;
 
 <div class="app">
 
-<img src="icono.png" class="logo">
-<h1>SSOMA PRO</h1>
+<h2>SSOMA PRO</h2>
 
-<div class="menu">
-<button onclick="mostrar('personal')">Personal</button>
-<button onclick="mostrar('insp')">Inspección</button>
-<button onclick="mostrar('rep')">Reporte</button>
-</div>
-
-<!-- PERSONAL -->
-<div id="personal" class="seccion">
-<h3>Personal</h3>
-<input id="nombre" placeholder="Nombre">
-<input id="dni" placeholder="DNI">
-<input id="cargo" placeholder="Cargo">
-<input id="area" placeholder="Área">
-
-<button class="btn" onclick="guardarPersonal()">Guardar</button>
-
-<div class="lista" id="listaPersonal"></div>
-</div>
-
-<!-- INSPECCION -->
-<div id="insp" class="seccion">
 <h3>Inspección</h3>
 
-<input id="areaIns" placeholder="Área">
+<input id="area" placeholder="Área">
+<textarea id="obs" placeholder="Observación"></textarea>
+
 <select id="estado">
 <option>Conforme</option>
 <option>No conforme</option>
 </select>
 
-<textarea id="obs" placeholder="Observación"></textarea>
+<button onclick="guardar()">Guardar</button>
 
-<input type="file" accept="image/*" id="foto">
+<button onclick="ver()">Ver registros</button>
 
-<button class="btn" onclick="obtenerGPS()">Obtener ubicación</button>
-<p id="gps"></p>
+<button onclick="pdf()">Exportar PDF</button>
 
-<button class="btn" onclick="guardarInspeccion()">Guardar inspección</button>
-
-<img id="preview" class="preview">
-
-<div class="lista" id="listaIns"></div>
-</div>
-
-<!-- REPORTE -->
-<div id="rep" class="seccion">
-<h3>Reporte</h3>
-<button class="btn" onclick="generarReporte()">Generar</button>
-<textarea id="salida" style="height:150px;"></textarea>
-</div>
+<div id="lista"></div>
 
 </div>
 
 <script>
 
-/* NAV */
-function mostrar(id){
-document.querySelectorAll('.seccion').forEach(s=>s.style.display='none');
-document.getElementById(id).style.display='block';
-}
-
-/* PERSONAL */
-function guardarPersonal(){
-let lista=JSON.parse(localStorage.getItem("p")||"[]");
-
-lista.push({
-nombre:nombre.value,
-dni:dni.value,
-cargo:cargo.value,
-area:area.value
-});
-
-localStorage.setItem("p",JSON.stringify(lista));
-cargarPersonal();
-}
-
-function cargarPersonal(){
-let lista=JSON.parse(localStorage.getItem("p")||"[]");
-listaPersonal.innerHTML="";
-
-lista.forEach((p,i)=>{
-listaPersonal.innerHTML+=`
-<div>${p.nombre} - ${p.cargo}</div>`;
-});
-}
-
-/* GPS */
-let ubicacion="";
-
-function obtenerGPS(){
-navigator.geolocation.getCurrentPosition(pos=>{
-ubicacion=pos.coords.latitude+","+pos.coords.longitude;
-gps.innerText="Ubicación: "+ubicacion;
-});
-}
-
-/* FOTO */
-let imagenBase64="";
-
-foto.addEventListener("change",()=>{
-let file=foto.files[0];
-let reader=new FileReader();
-
-reader.onload=function(e){
-imagenBase64=e.target.result;
-preview.src=imagenBase64;
-}
-
-reader.readAsDataURL(file);
-});
-
-/* INSPECCION */
-function guardarInspeccion(){
-let lista=JSON.parse(localStorage.getItem("i")||"[]");
-
-lista.push({
-area:areaIns.value,
-estado:estado.value,
+// GUARDAR EN FIREBASE
+async function guardar(){
+await addDoc(collection(db,"inspecciones"),{
+area:area.value,
 obs:obs.value,
-fecha:new Date().toLocaleString(),
-gps:ubicacion,
-foto:imagenBase64
+estado:estado.value,
+fecha:new Date().toLocaleString()
 });
-
-localStorage.setItem("i",JSON.stringify(lista));
-cargarIns();
+alert("Guardado en la nube");
 }
 
-function cargarIns(){
-let lista=JSON.parse(localStorage.getItem("i")||"[]");
-listaIns.innerHTML="";
+// VER DATOS
+async function ver(){
+let q=await getDocs(collection(db,"inspecciones"));
+lista.innerHTML="";
 
-lista.forEach(i=>{
-listaIns.innerHTML+=`
-<div>
-${i.area} - ${i.estado}
+q.forEach(doc=>{
+let d=doc.data();
+lista.innerHTML+=`
+<div class="card">
+${d.area}<br>
+${d.estado}<br>
+${d.obs}
 </div>`;
 });
 }
 
-/* REPORTE */
-function generarReporte(){
-let datos=JSON.parse(localStorage.getItem("i")||"[]");
+// PDF
+function pdf(){
+const { jsPDF } = window.jspdf;
+let doc=new jsPDF();
 
-let txt="";
+let texto=lista.innerText;
 
-datos.forEach((d,i)=>{
-txt+=`N°${i+1}
-Área:${d.area}
-Estado:${d.estado}
-Obs:${d.obs}
-GPS:${d.gps}
-Fecha:${d.fecha}
-
-`;
-});
-
-salida.value=txt;
+doc.text(texto,10,10);
+doc.save("reporte_ssoma.pdf");
 }
-
-/* INIT */
-cargarPersonal();
-cargarIns();
 
 </script>
 
