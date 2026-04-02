@@ -9,61 +9,80 @@
 
 <style>
 body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
+    margin:0;
+    font-family: Arial;
+    background: linear-gradient(135deg,#0a1a2f,#1c2f4a);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
 }
 
 .app{
-  max-width:420px;
-  margin:auto;
-  padding:15px;
+    width:350px;
+    background:#2c3e50;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    text-align:center;
 }
 
 .logo{
-  width:80px;
-  display:block;
-  margin:auto;
+    width:80px;
+    margin-bottom:10px;
 }
 
-h1{text-align:center;}
-
-.tabs button{
-  width:32%;
-  margin:1%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#38bdf8;
+h1{
+    margin:10px 0;
 }
 
-.seccion{display:none;}
-.activa{display:block;}
-
-input,textarea,select{
-  width:100%;
-  padding:10px;
-  margin:5px 0;
-  border-radius:10px;
-  border:none;
+.menu button{
+    width:45%;
+    margin:5px;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#3498db;
+    color:white;
+    cursor:pointer;
 }
 
-button{
-  width:100%;
-  padding:10px;
-  margin-top:5px;
-  border:none;
-  border-radius:10px;
-  background:#22c55e;
-  font-weight:bold;
+.menu button:hover{
+    background:#2980b9;
 }
 
-.card{
-  background:#1e293b;
-  padding:10px;
-  border-radius:10px;
-  margin-top:10px;
+input, select, textarea{
+    width:100%;
+    margin:5px 0;
+    padding:8px;
+    border-radius:8px;
+    border:none;
+}
+
+.btn{
+    background:#27ae60;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    color:white;
+    width:100%;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.btn:hover{
+    background:#1e8449;
+}
+
+.seccion{
+    display:none;
+    margin-top:15px;
+    text-align:left;
+}
+
+textarea{
+    height:120px;
 }
 </style>
 </head>
@@ -75,137 +94,101 @@ button{
 <img src="icono.png" class="logo">
 <h1>SSOMA PRO</h1>
 
-<div class="tabs">
-  <button onclick="ver('trab')">Personal</button>
-  <button onclick="ver('insp')">Inspección</button>
-  <button onclick="ver('rep')">Reporte</button>
+<div class="menu">
+    <button onclick="mostrar('personal')">Personal</button>
+    <button onclick="mostrar('inspeccion')">Inspección</button>
+    <button onclick="mostrar('reporte')">Reportes</button>
 </div>
 
 <!-- PERSONAL -->
-<div id="trab" class="seccion activa">
-<input id="n" placeholder="Nombre">
-<input id="c" placeholder="Cargo">
-<input id="a" placeholder="Área">
-<button onclick="guardarTrab()">Guardar</button>
-<div id="listaTrab"></div>
+<div id="personal" class="seccion">
+    <h3>Registro Personal</h3>
+    <input id="nombre" placeholder="Nombre">
+    <input id="dni" placeholder="DNI">
+    <input id="cargo" placeholder="Cargo">
+    <input id="area" placeholder="Área">
+    <button class="btn" onclick="guardarPersonal()">Guardar</button>
 </div>
 
 <!-- INSPECCION -->
-<div id="insp" class="seccion">
-<input id="area" placeholder="Área">
-<textarea id="obs" placeholder="Observación"></textarea>
-<select id="estado">
-<option>Conforme</option>
-<option>Observado</option>
-<option>Crítico</option>
-</select>
+<div id="inspeccion" class="seccion">
+    <h3>Inspección SST</h3>
+    <input id="areaIns" placeholder="Área inspeccionada">
 
-<button onclick="ubicacion()">Obtener ubicación</button>
-<p id="ubi">Sin ubicación</p>
+    <select id="estado">
+        <option>Conforme</option>
+        <option>No conforme</option>
+    </select>
 
-<button onclick="guardarInsp()">Guardar</button>
-<div id="listaInsp"></div>
+    <textarea id="obs" placeholder="Observaciones"></textarea>
+
+    <button class="btn" onclick="guardarInspeccion()">Guardar inspección</button>
 </div>
 
 <!-- REPORTE -->
-<div id="rep" class="seccion">
-<button onclick="generar()">Generar reporte</button>
-<textarea id="salida" style="height:150px;"></textarea>
+<div id="reporte" class="seccion">
+    <h3>Reportes</h3>
+    <button class="btn" onclick="generarReporte()">Generar reporte</button>
+    <textarea id="salida"></textarea>
 </div>
 
 </div>
 
 <script>
 
-// CAMBIO DE PANTALLA
-function ver(id){
-  document.querySelectorAll(".seccion").forEach(s=>s.classList.remove("activa"));
-  document.getElementById(id).classList.add("activa");
+function mostrar(id){
+    document.querySelectorAll('.seccion').forEach(s=>s.style.display='none');
+    document.getElementById(id).style.display='block';
 }
 
-// STORAGE
-function get(k){return JSON.parse(localStorage.getItem(k)||"[]");}
-function set(k,v){localStorage.setItem(k,JSON.stringify(v));}
+/* GUARDAR PERSONAL */
+function guardarPersonal(){
+    let data = {
+        nombre:document.getElementById("nombre").value,
+        dni:document.getElementById("dni").value,
+        cargo:document.getElementById("cargo").value,
+        area:document.getElementById("area").value
+    };
 
-// TRABAJADORES
-function guardarTrab(){
-  let d=get("trab");
-  d.push({n:n.value,c:c.value,a:a.value});
-  set("trab",d);
-  n.value="";c.value="";a.value="";
-  mostrarTrab();
+    let lista = JSON.parse(localStorage.getItem("personal")||"[]");
+    lista.push(data);
+    localStorage.setItem("personal",JSON.stringify(lista));
+
+    alert("Trabajador guardado");
 }
 
-function mostrarTrab(){
-  let d=get("trab");
-  listaTrab.innerHTML=d.map((x,i)=>`
-    <div class="card">
-    ${x.n}<br>${x.c}<br>${x.a}
-    <button onclick="delTrab(${i})">Eliminar</button>
-    </div>
-  `).join("");
+/* GUARDAR INSPECCION */
+function guardarInspeccion(){
+    let data = {
+        area:document.getElementById("areaIns").value,
+        estado:document.getElementById("estado").value,
+        obs:document.getElementById("obs").value,
+        fecha:new Date().toLocaleString()
+    };
+
+    let lista = JSON.parse(localStorage.getItem("inspecciones")||"[]");
+    lista.push(data);
+    localStorage.setItem("inspecciones",JSON.stringify(lista));
+
+    alert("Inspección guardada");
 }
 
-function delTrab(i){
-  let d=get("trab");
-  d.splice(i,1);
-  set("trab",d);
-  mostrarTrab();
+/* GENERAR REPORTE */
+function generarReporte(){
+    let datos = JSON.parse(localStorage.getItem("inspecciones")||"[]");
+
+    let texto = "";
+
+    datos.forEach((d,i)=>{
+        texto += "N° " + (i+1) + "\n";
+        texto += "Área: " + d.area + "\n";
+        texto += "Estado: " + d.estado + "\n";
+        texto += "Obs: " + d.obs + "\n";
+        texto += "Fecha: " + d.fecha + "\n\n";
+    });
+
+    document.getElementById("salida").value = texto;
 }
-
-// UBICACION
-let lat="",lon="";
-function ubicacion(){
-  navigator.geolocation.getCurrentPosition(p=>{
-    lat=p.coords.latitude.toFixed(5);
-    lon=p.coords.longitude.toFixed(5);
-    ubi.innerText="Lat: "+lat+" | Lon: "+lon;
-  });
-}
-
-// INSPECCION
-function guardarInsp(){
-  let d=get("insp");
-  d.push({
-    area:area.value,
-    obs:obs.value,
-    estado:estado.value,
-    lat,lon,
-    fecha:new Date().toLocaleString()
-  });
-  set("insp",d);
-  area.value="";obs.value="";
-  mostrarInsp();
-}
-
-function mostrarInsp(){
-  let d=get("insp");
-  listaInsp.innerHTML=d.map(x=>`
-    <div class="card">
-    <b>${x.area}</b><br>
-    Estado: ${x.estado}<br>
-    ${x.obs}<br>
-    ${x.lat || "-"}<br>
-    ${x.fecha}
-    </div>
-  `).join("");
-}
-
-// REPORTE
-function generar(){
-  let d=get("insp");
-  let texto="REPORTE SST\n\n";
-
-  d.forEach((x,i)=>{
-    texto+=`${i+1}. ${x.area}\nEstado: ${x.estado}\nObs: ${x.obs}\nFecha: ${x.fecha}\n\n`;
-  });
-
-  salida.value=texto;
-}
-
-// INIT
-mostrarTrab();
-mostrarInsp();
 
 </script>
 
