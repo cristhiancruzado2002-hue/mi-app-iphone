@@ -5,149 +5,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SSOMA App</title>
 
-  <link rel="icon" type="image/png" href="./icono.png?v=50">
-  <link rel="shortcut icon" type="image/png" href="./icono.png?v=50">
-  <link rel="apple-touch-icon" href="./icono.png?v=50">
+  <link rel="icon" type="image/png" href="icono.png">
+  <link rel="shortcut icon" type="image/png" href="icono.png">
+  <link rel="apple-touch-icon" href="icono.png">
+
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="SSOMA App">
 
   <style>
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:Arial,sans-serif;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
     }
 
-    body{
-      background:linear-gradient(180deg,#0f172a,#1e293b);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:20px;
+    body {
+      background: linear-gradient(180deg, #0f172a, #1e293b);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .telefono{
-      width:100%;
-      max-width:390px;
-      background:rgba(255,255,255,0.08);
-      border-radius:30px;
-      padding:24px;
-      color:white;
-      box-shadow:0 15px 35px rgba(0,0,0,0.35);
-      backdrop-filter:blur(10px);
+    .telefono {
+      width: 100%;
+      max-width: 390px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 30px;
+      padding: 24px;
+      color: white;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
     }
 
-    .encabezado{
-      text-align:center;
-      margin-bottom:20px;
+    .encabezado {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .encabezado h1{
-      font-size:30px;
-      margin-bottom:8px;
+    .logo-app {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 20px;
+      display: block;
+      margin: 0 auto 15px auto;
+      background: white;
+      padding: 4px;
     }
 
-    .encabezado p{
-      color:#cbd5e1;
-      font-size:14px;
+    .encabezado h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
     }
 
-    .caja{
-      background:rgba(255,255,255,0.08);
-      border-radius:20px;
-      padding:18px;
-      margin-bottom:16px;
+    .encabezado p {
+      color: #cbd5e1;
+      font-size: 14px;
     }
 
-    .caja h2{
-      font-size:18px;
-      margin-bottom:10px;
+    .caja {
+      background: rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
     }
 
-    .caja p{
-      color:#dbeafe;
-      line-height:1.4;
-      margin-top:8px;
+    .caja h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
     }
 
-    input{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:14px;
-      margin-top:10px;
-      margin-bottom:12px;
-      font-size:16px;
-      outline:none;
+    .caja p {
+      color: #dbeafe;
+      line-height: 1.4;
+      margin-top: 8px;
     }
 
-    button{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:14px;
-      background:#38bdf8;
-      color:#0f172a;
-      font-size:16px;
-      font-weight:bold;
-      cursor:pointer;
-      margin-top:6px;
+    input {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      outline: none;
     }
 
-    .menu{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:10px;
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: #38bdf8;
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 6px;
     }
 
-    .menu button{
-      background:#e2e8f0;
-      color:#0f172a;
+    .menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    #resultado{
-      margin-top:14px;
-      color:#7dd3fc;
-      font-weight:bold;
-      text-align:center;
+    .menu button {
+      background: #e2e8f0;
+      color: #0f172a;
     }
 
-    #seccionActiva{
-      margin-top:14px;
-      color:#cbd5e1;
-      text-align:center;
-      font-weight:bold;
+    .pantalla {
+      display: none;
     }
 
-    .pantalla{
-      display:none;
+    .pantalla.activa {
+      display: block;
     }
 
-    .pantalla.activa{
-      display:block;
+    .mini-boton {
+      background: #22c55e;
+      color: white;
+      margin-top: 10px;
     }
 
-    .mini-boton{
-      background:#22c55e;
-      color:white;
-      margin-top:10px;
+    #resultado,
+    #mensajeReporte,
+    #seccionActiva {
+      margin-top: 14px;
+      text-align: center;
+      font-weight: bold;
     }
 
-    #mensajeReporte{
-      margin-top:12px;
-      color:#86efac;
-      font-weight:bold;
-      text-align:center;
+    #resultado {
+      color: #7dd3fc;
+    }
+
+    #mensajeReporte {
+      color: #86efac;
+    }
+
+    #seccionActiva {
+      color: #cbd5e1;
     }
   </style>
 </head>
 <body>
   <div class="telefono">
     <div class="encabezado">
+      <img src="icono.png" alt="Logo" class="logo-app">
       <h1>SSOMA App</h1>
       <p>Primera aplicación estilo iPhone</p>
     </div>
@@ -191,7 +203,7 @@
   <script>
     function abrirSeccion(seccion) {
       const pantallas = document.querySelectorAll(".pantalla");
-      pantallas.forEach(function(pantalla) {
+      pantallas.forEach(function (pantalla) {
         pantalla.classList.remove("activa");
       });
 
