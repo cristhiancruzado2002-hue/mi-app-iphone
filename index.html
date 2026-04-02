@@ -3,138 +3,210 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSOMA PRO</title>
 
-<title>SSOMA App</title>
-
-<!-- ICONO -->
-<link rel="icon" type="image/png" href="icono.png?v=3">
-<link rel="apple-touch-icon" href="icono.png?v=3">
-
-<!-- COLOR APP -->
-<meta name="theme-color" content="#0f172a">
+<link rel="icon" href="icono.png">
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
 }
 
-/* CONTENEDOR PRINCIPAL */
-.app {
-    width: 320px;
-    background: #1f2937;
-    border-radius: 25px;
-    padding: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    text-align: center;
+.app{
+  max-width:420px;
+  margin:auto;
+  padding:15px;
 }
 
-/* LOGO */
-.logo {
-    width: 120px;
-    margin-bottom: 10px;
+.logo{
+  width:80px;
+  display:block;
+  margin:auto;
 }
 
-/* TITULO */
-h1 {
-    color: white;
-    margin: 10px 0 5px;
+h1{text-align:center;}
+
+.tabs button{
+  width:32%;
+  margin:1%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#38bdf8;
 }
 
-/* SUBTITULO */
-.sub {
-    color: #9ca3af;
-    font-size: 14px;
-    margin-bottom: 15px;
+.seccion{display:none;}
+.activa{display:block;}
+
+input,textarea,select{
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+  border-radius:10px;
+  border:none;
 }
 
-/* MENU */
-.menu {
-    background: #374151;
-    border-radius: 15px;
-    padding: 15px;
+button{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  font-weight:bold;
 }
 
-/* BOTONES */
-button {
-    width: 45%;
-    margin: 5px;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background: #e5e7eb;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-button:hover {
-    background: #d1d5db;
-}
-
-/* TEXTO */
-.content {
-    margin-top: 15px;
-    background: #374151;
-    padding: 10px;
-    border-radius: 15px;
-    color: white;
-    font-size: 14px;
+.card{
+  background:#1e293b;
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
 }
 </style>
-
 </head>
 
 <body>
 
 <div class="app">
 
-    <!-- LOGO -->
-    <img src="icono.png" class="logo">
+<img src="icono.png" class="logo">
+<h1>SSOMA PRO</h1>
 
-    <h1>SSOMA App</h1>
-    <div class="sub">Primera aplicación estilo iPhone</div>
+<div class="tabs">
+  <button onclick="ver('trab')">Personal</button>
+  <button onclick="ver('insp')">Inspección</button>
+  <button onclick="ver('rep')">Reporte</button>
+</div>
 
-    <div class="menu">
-        <button onclick="cambiar('Inicio')">Inicio</button>
-        <button onclick="cambiar('Reportes')">Reportes</button>
-        <button onclick="cambiar('Personal')">Personal</button>
-        <button onclick="cambiar('Ajustes')">Ajustes</button>
+<!-- PERSONAL -->
+<div id="trab" class="seccion activa">
+<input id="n" placeholder="Nombre">
+<input id="c" placeholder="Cargo">
+<input id="a" placeholder="Área">
+<button onclick="guardarTrab()">Guardar</button>
+<div id="listaTrab"></div>
+</div>
 
-        <p id="estado">Estás en Inicio</p>
-    </div>
+<!-- INSPECCION -->
+<div id="insp" class="seccion">
+<input id="area" placeholder="Área">
+<textarea id="obs" placeholder="Observación"></textarea>
+<select id="estado">
+<option>Conforme</option>
+<option>Observado</option>
+<option>Crítico</option>
+</select>
 
-    <div class="content" id="contenido">
-        Bienvenido a tu aplicación SSOMA.
-    </div>
+<button onclick="ubicacion()">Obtener ubicación</button>
+<p id="ubi">Sin ubicación</p>
+
+<button onclick="guardarInsp()">Guardar</button>
+<div id="listaInsp"></div>
+</div>
+
+<!-- REPORTE -->
+<div id="rep" class="seccion">
+<button onclick="generar()">Generar reporte</button>
+<textarea id="salida" style="height:150px;"></textarea>
+</div>
 
 </div>
 
 <script>
-function cambiar(seccion){
-    document.getElementById("estado").innerText = "Estás en " + seccion;
 
-    let texto = "";
-
-    if(seccion === "Inicio"){
-        texto = "Bienvenido a tu aplicación SSOMA.";
-    }
-    if(seccion === "Reportes"){
-        texto = "Aquí podrás ver reportes de seguridad.";
-    }
-    if(seccion === "Personal"){
-        texto = "Lista de trabajadores próximamente.";
-    }
-    if(seccion === "Ajustes"){
-        texto = "Configuraciones de la app.";
-    }
-
-    document.getElementById("contenido").innerText = texto;
+// CAMBIO DE PANTALLA
+function ver(id){
+  document.querySelectorAll(".seccion").forEach(s=>s.classList.remove("activa"));
+  document.getElementById(id).classList.add("activa");
 }
+
+// STORAGE
+function get(k){return JSON.parse(localStorage.getItem(k)||"[]");}
+function set(k,v){localStorage.setItem(k,JSON.stringify(v));}
+
+// TRABAJADORES
+function guardarTrab(){
+  let d=get("trab");
+  d.push({n:n.value,c:c.value,a:a.value});
+  set("trab",d);
+  n.value="";c.value="";a.value="";
+  mostrarTrab();
+}
+
+function mostrarTrab(){
+  let d=get("trab");
+  listaTrab.innerHTML=d.map((x,i)=>`
+    <div class="card">
+    ${x.n}<br>${x.c}<br>${x.a}
+    <button onclick="delTrab(${i})">Eliminar</button>
+    </div>
+  `).join("");
+}
+
+function delTrab(i){
+  let d=get("trab");
+  d.splice(i,1);
+  set("trab",d);
+  mostrarTrab();
+}
+
+// UBICACION
+let lat="",lon="";
+function ubicacion(){
+  navigator.geolocation.getCurrentPosition(p=>{
+    lat=p.coords.latitude.toFixed(5);
+    lon=p.coords.longitude.toFixed(5);
+    ubi.innerText="Lat: "+lat+" | Lon: "+lon;
+  });
+}
+
+// INSPECCION
+function guardarInsp(){
+  let d=get("insp");
+  d.push({
+    area:area.value,
+    obs:obs.value,
+    estado:estado.value,
+    lat,lon,
+    fecha:new Date().toLocaleString()
+  });
+  set("insp",d);
+  area.value="";obs.value="";
+  mostrarInsp();
+}
+
+function mostrarInsp(){
+  let d=get("insp");
+  listaInsp.innerHTML=d.map(x=>`
+    <div class="card">
+    <b>${x.area}</b><br>
+    Estado: ${x.estado}<br>
+    ${x.obs}<br>
+    ${x.lat || "-"}<br>
+    ${x.fecha}
+    </div>
+  `).join("");
+}
+
+// REPORTE
+function generar(){
+  let d=get("insp");
+  let texto="REPORTE SST\n\n";
+
+  d.forEach((x,i)=>{
+    texto+=`${i+1}. ${x.area}\nEstado: ${x.estado}\nObs: ${x.obs}\nFecha: ${x.fecha}\n\n`;
+  });
+
+  salida.value=texto;
+}
+
+// INIT
+mostrarTrab();
+mostrarInsp();
+
 </script>
 
 </body>
