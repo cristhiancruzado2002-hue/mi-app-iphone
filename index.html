@@ -3,50 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSOMA PRO FINAL</title>
+<title>SSOMA PRO 100%</title>
 
 <link rel="icon" href="icono.png">
 
-<!-- PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- FIREBASE -->
-<script type="module">
-
-// 🔴 PEGA AQUÍ TU CONFIG REAL
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_DOMINIO",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_BUCKET",
-  messagingSenderId: "TU_ID",
-  appId: "TU_APP_ID"
-};
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// LOGIN AUTOMÁTICO
-signInAnonymously(auth);
-
-window.db = db;
-window.addDoc = addDoc;
-window.getDocs = getDocs;
-window.collection = collection;
-
-</script>
-
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white;}
-.app{max-width:420px;margin:auto;padding:15px;}
-input,textarea,select,button{width:100%;margin:5px 0;padding:10px;border-radius:10px;border:none;}
-button{background:#22c55e;}
-.card{background:#1e293b;padding:10px;border-radius:10px;margin-top:10px;}
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
+
+.app{
+max-width:420px;
+margin:auto;
+padding:15px;
+}
+
+h1{text-align:center;}
+
+input,textarea,select,button{
+width:100%;
+padding:10px;
+margin:5px 0;
+border-radius:10px;
+border:none;
+}
+
+button{
+background:#22c55e;
+}
+
+.card{
+background:#1e293b;
+padding:10px;
+border-radius:10px;
+margin-top:10px;
+}
+
+.menu{
+display:flex;
+gap:5px;
+}
+
+.menu button{
+flex:1;
+background:#38bdf8;
+}
 </style>
 </head>
 
@@ -54,67 +60,151 @@ button{background:#22c55e;}
 
 <div class="app">
 
-<h2>SSOMA PRO</h2>
+<h1>SSOMA PRO</h1>
 
+<div class="menu">
+<button onclick="ver('login')">Login</button>
+<button onclick="ver('insp')">Inspección</button>
+<button onclick="ver('rep')">Reporte</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login">
+<h3>Usuario</h3>
+<input id="user" placeholder="Usuario">
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="login()">Ingresar</button>
+<p id="estado"></p>
+</div>
+
+<!-- INSPECCION -->
+<div id="insp" style="display:none;">
 <h3>Inspección</h3>
 
 <input id="area" placeholder="Área">
 <textarea id="obs" placeholder="Observación"></textarea>
 
-<select id="estado">
+<select id="estadoIns">
 <option>Conforme</option>
 <option>No conforme</option>
 </select>
 
+<input type="file" id="foto">
+
+<button onclick="gps()">Ubicación</button>
+<p id="ubi"></p>
+
 <button onclick="guardar()">Guardar</button>
 
-<button onclick="ver()">Ver registros</button>
-
-<button onclick="pdf()">Exportar PDF</button>
-
 <div id="lista"></div>
+</div>
+
+<!-- REPORTE -->
+<div id="rep" style="display:none;">
+<h3>Reporte</h3>
+<button onclick="pdf()">Exportar PDF</button>
+<textarea id="salida" style="height:150px;"></textarea>
+</div>
 
 </div>
 
 <script>
 
-// GUARDAR EN FIREBASE
-async function guardar(){
-await addDoc(collection(db,"inspecciones"),{
-area:area.value,
-obs:obs.value,
-estado:estado.value,
-fecha:new Date().toLocaleString()
-});
-alert("Guardado en la nube");
+/* NAV */
+function ver(id){
+document.getElementById("login").style.display="none";
+document.getElementById("insp").style.display="none";
+document.getElementById("rep").style.display="none";
+document.getElementById(id).style.display="block";
 }
 
-// VER DATOS
-async function ver(){
-let q=await getDocs(collection(db,"inspecciones"));
+/* LOGIN SIMPLE */
+function login(){
+if(user.value==="admin" && pass.value==="1234"){
+estado.innerText="Acceso correcto";
+ver("insp");
+}else{
+estado.innerText="Error de acceso";
+}
+}
+
+/* GPS */
+let ubicacion="";
+function gps(){
+navigator.geolocation.getCurrentPosition(p=>{
+ubicacion=p.coords.latitude+","+p.coords.longitude;
+ubi.innerText=ubicacion;
+});
+}
+
+/* FOTO */
+let img64="";
+foto.addEventListener("change",()=>{
+let f=foto.files[0];
+let r=new FileReader();
+r.onload=e=>{
+img64=e.target.result;
+}
+r.readAsDataURL(f);
+});
+
+/* STORAGE */
+function get(){return JSON.parse(localStorage.getItem("data")||"[]");}
+function set(d){localStorage.setItem("data",JSON.stringify(d));}
+
+/* GUARDAR */
+function guardar(){
+let d=get();
+
+d.push({
+area:area.value,
+obs:obs.value,
+estado:estadoIns.value,
+gps:ubicacion,
+fecha:new Date().toLocaleString()
+});
+
+set(d);
+mostrar();
+}
+
+/* MOSTRAR */
+function mostrar(){
+let d=get();
 lista.innerHTML="";
 
-q.forEach(doc=>{
-let d=doc.data();
+d.forEach(x=>{
 lista.innerHTML+=`
 <div class="card">
-${d.area}<br>
-${d.estado}<br>
-${d.obs}
+<b>${x.area}</b><br>
+${x.estado}<br>
+${x.obs}<br>
+${x.gps}<br>
+${x.fecha}
 </div>`;
 });
 }
 
-// PDF
+/* PDF */
 function pdf(){
 const { jsPDF } = window.jspdf;
 let doc=new jsPDF();
 
-let texto=lista.innerText;
+let d=get();
+let y=10;
 
-doc.text(texto,10,10);
-doc.save("reporte_ssoma.pdf");
+d.forEach((x,i)=>{
+doc.text(`${i+1}. ${x.area} - ${x.estado}`,10,y);
+y+=10;
+doc.text(x.obs,10,y);
+y+=10;
+});
+
+doc.save("reporte.pdf");
 }
+
+/* INIT */
+mostrar();
 
 </script>
 
