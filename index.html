@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SSOMA App</title>
 
-  <link rel="icon" type="image/png" sizes="512x512" href="./icono.png.png?v=5">
-  <link rel="apple-touch-icon" sizes="512x512" href="./icono.png.png?v=5">
+  <link rel="icon" type="image/png" href="./icono.png?v=50">
+  <link rel="shortcut icon" type="image/png" href="./icono.png?v=50">
+  <link rel="apple-touch-icon" href="./icono.png?v=50">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="SSOMA App">
@@ -16,11 +17,11 @@
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:Arial, sans-serif;
+      font-family:Arial,sans-serif;
     }
 
     body{
-      background: linear-gradient(180deg, #0f172a, #1e293b);
+      background:linear-gradient(180deg,#0f172a,#1e293b);
       min-height:100vh;
       display:flex;
       justify-content:center;
@@ -31,12 +32,12 @@
     .telefono{
       width:100%;
       max-width:390px;
-      background: rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.08);
       border-radius:30px;
       padding:24px;
       color:white;
       box-shadow:0 15px 35px rgba(0,0,0,0.35);
-      backdrop-filter: blur(10px);
+      backdrop-filter:blur(10px);
     }
 
     .encabezado{
@@ -55,7 +56,7 @@
     }
 
     .caja{
-      background: rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.08);
       border-radius:20px;
       padding:18px;
       margin-bottom:16px;
@@ -189,20 +190,20 @@
 
   <script>
     function abrirSeccion(seccion) {
-      let pantallas = document.querySelectorAll(".pantalla");
+      const pantallas = document.querySelectorAll(".pantalla");
       pantallas.forEach(function(pantalla) {
         pantalla.classList.remove("activa");
       });
 
       document.getElementById("pantalla-" + seccion).classList.add("activa");
 
-      let texto = seccion.charAt(0).toUpperCase() + seccion.slice(1);
+      const texto = seccion.charAt(0).toUpperCase() + seccion.slice(1);
       document.getElementById("seccionActiva").innerText = "Estás en " + texto;
     }
 
     function saludar() {
-      let nombre = document.getElementById("nombre").value;
-      let resultado = document.getElementById("resultado");
+      const nombre = document.getElementById("nombre").value;
+      const resultado = document.getElementById("resultado");
 
       if (nombre.trim() === "") {
         resultado.innerText = "Escribe tu nombre primero";
