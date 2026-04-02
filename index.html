@@ -10,8 +10,8 @@
 <style>
 body{
     margin:0;
-    font-family: Arial;
-    background: linear-gradient(135deg,#0a1a2f,#1c2f4a);
+    font-family:Arial;
+    background:linear-gradient(135deg,#0a1a2f,#1c2f4a);
     color:white;
     display:flex;
     justify-content:center;
@@ -20,26 +20,30 @@ body{
 }
 
 .app{
-    width:350px;
+    width:380px;
     background:#2c3e50;
     padding:20px;
     border-radius:20px;
     box-shadow:0 10px 30px rgba(0,0,0,0.5);
-    text-align:center;
 }
 
 .logo{
-    width:80px;
-    margin-bottom:10px;
+    width:70px;
+    display:block;
+    margin:auto;
 }
 
-h1{
-    margin:10px 0;
+h1{text-align:center;}
+
+.menu{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    justify-content:center;
 }
 
 .menu button{
-    width:45%;
-    margin:5px;
+    flex:1 1 30%;
     padding:10px;
     border:none;
     border-radius:10px;
@@ -48,16 +52,16 @@ h1{
     cursor:pointer;
 }
 
-.menu button:hover{
-    background:#2980b9;
+.activo{
+    background:#1abc9c !important;
 }
 
-input, select, textarea{
+input,select,textarea{
     width:100%;
     margin:5px 0;
     padding:8px;
-    border-radius:8px;
     border:none;
+    border-radius:8px;
 }
 
 .btn{
@@ -67,22 +71,22 @@ input, select, textarea{
     border-radius:10px;
     color:white;
     width:100%;
-    cursor:pointer;
-    margin-top:10px;
-}
-
-.btn:hover{
-    background:#1e8449;
+    margin-top:5px;
 }
 
 .seccion{
     display:none;
-    margin-top:15px;
-    text-align:left;
+    margin-top:10px;
 }
 
-textarea{
-    height:120px;
+.lista{
+    background:#1c2833;
+    padding:10px;
+    border-radius:10px;
+    margin-top:10px;
+    max-height:150px;
+    overflow:auto;
+    font-size:12px;
 }
 </style>
 </head>
@@ -95,41 +99,46 @@ textarea{
 <h1>SSOMA PRO</h1>
 
 <div class="menu">
-    <button onclick="mostrar('personal')">Personal</button>
-    <button onclick="mostrar('inspeccion')">Inspección</button>
-    <button onclick="mostrar('reporte')">Reportes</button>
+<button onclick="mostrar('personal')">Personal</button>
+<button onclick="mostrar('inspeccion')">Inspección</button>
+<button onclick="mostrar('reporte')">Reportes</button>
 </div>
 
 <!-- PERSONAL -->
 <div id="personal" class="seccion">
-    <h3>Registro Personal</h3>
-    <input id="nombre" placeholder="Nombre">
-    <input id="dni" placeholder="DNI">
-    <input id="cargo" placeholder="Cargo">
-    <input id="area" placeholder="Área">
-    <button class="btn" onclick="guardarPersonal()">Guardar</button>
+<h3>Personal</h3>
+<input id="nombre" placeholder="Nombre">
+<input id="dni" placeholder="DNI">
+<input id="cargo" placeholder="Cargo">
+<input id="area" placeholder="Área">
+
+<button class="btn" onclick="guardarPersonal()">Guardar</button>
+
+<div class="lista" id="listaPersonal"></div>
 </div>
 
 <!-- INSPECCION -->
 <div id="inspeccion" class="seccion">
-    <h3>Inspección SST</h3>
-    <input id="areaIns" placeholder="Área inspeccionada">
+<h3>Inspección SST</h3>
 
-    <select id="estado">
-        <option>Conforme</option>
-        <option>No conforme</option>
-    </select>
+<input id="areaIns" placeholder="Área">
+<select id="estado">
+<option>Conforme</option>
+<option>No conforme</option>
+</select>
 
-    <textarea id="obs" placeholder="Observaciones"></textarea>
+<textarea id="obs" placeholder="Observación"></textarea>
 
-    <button class="btn" onclick="guardarInspeccion()">Guardar inspección</button>
+<button class="btn" onclick="guardarInspeccion()">Guardar</button>
+
+<div class="lista" id="listaInspeccion"></div>
 </div>
 
 <!-- REPORTE -->
 <div id="reporte" class="seccion">
-    <h3>Reportes</h3>
-    <button class="btn" onclick="generarReporte()">Generar reporte</button>
-    <textarea id="salida"></textarea>
+<h3>Reporte</h3>
+<button class="btn" onclick="generarReporte()">Generar</button>
+<textarea id="salida" style="height:150px;"></textarea>
 </div>
 
 </div>
@@ -137,58 +146,98 @@ textarea{
 <script>
 
 function mostrar(id){
-    document.querySelectorAll('.seccion').forEach(s=>s.style.display='none');
-    document.getElementById(id).style.display='block';
+document.querySelectorAll('.seccion').forEach(s=>s.style.display='none');
+document.getElementById(id).style.display='block';
 }
 
-/* GUARDAR PERSONAL */
+/* PERSONAL */
 function guardarPersonal(){
-    let data = {
-        nombre:document.getElementById("nombre").value,
-        dni:document.getElementById("dni").value,
-        cargo:document.getElementById("cargo").value,
-        area:document.getElementById("area").value
-    };
+let data={
+nombre:nombre.value,
+dni:dni.value,
+cargo:cargo.value,
+area:area.value
+};
 
-    let lista = JSON.parse(localStorage.getItem("personal")||"[]");
-    lista.push(data);
-    localStorage.setItem("personal",JSON.stringify(lista));
+let lista=JSON.parse(localStorage.getItem("personal")||"[]");
+lista.push(data);
+localStorage.setItem("personal",JSON.stringify(lista));
 
-    alert("Trabajador guardado");
+cargarPersonal();
 }
 
-/* GUARDAR INSPECCION */
+function cargarPersonal(){
+let lista=JSON.parse(localStorage.getItem("personal")||"[]");
+
+listaPersonal.innerHTML="";
+
+lista.forEach((p,i)=>{
+listaPersonal.innerHTML+=`
+<div>
+${p.nombre} - ${p.cargo}
+<button onclick="eliminarPersonal(${i})">X</button>
+</div>`;
+});
+}
+
+function eliminarPersonal(i){
+let lista=JSON.parse(localStorage.getItem("personal"));
+lista.splice(i,1);
+localStorage.setItem("personal",JSON.stringify(lista));
+cargarPersonal();
+}
+
+/* INSPECCION */
 function guardarInspeccion(){
-    let data = {
-        area:document.getElementById("areaIns").value,
-        estado:document.getElementById("estado").value,
-        obs:document.getElementById("obs").value,
-        fecha:new Date().toLocaleString()
-    };
+let data={
+area:areaIns.value,
+estado:estado.value,
+obs:obs.value,
+fecha:new Date().toLocaleString()
+};
 
-    let lista = JSON.parse(localStorage.getItem("inspecciones")||"[]");
-    lista.push(data);
-    localStorage.setItem("inspecciones",JSON.stringify(lista));
+let lista=JSON.parse(localStorage.getItem("insp")||"[]");
+lista.push(data);
+localStorage.setItem("insp",JSON.stringify(lista));
 
-    alert("Inspección guardada");
+cargarInspeccion();
 }
 
-/* GENERAR REPORTE */
+function cargarInspeccion(){
+let lista=JSON.parse(localStorage.getItem("insp")||"[]");
+
+listaInspeccion.innerHTML="";
+
+lista.forEach(i=>{
+listaInspeccion.innerHTML+=`
+<div>
+${i.area} - ${i.estado}
+</div>`;
+});
+}
+
+/* REPORTE */
 function generarReporte(){
-    let datos = JSON.parse(localStorage.getItem("inspecciones")||"[]");
+let datos=JSON.parse(localStorage.getItem("insp")||"[]");
 
-    let texto = "";
+let txt="";
 
-    datos.forEach((d,i)=>{
-        texto += "N° " + (i+1) + "\n";
-        texto += "Área: " + d.area + "\n";
-        texto += "Estado: " + d.estado + "\n";
-        texto += "Obs: " + d.obs + "\n";
-        texto += "Fecha: " + d.fecha + "\n\n";
-    });
+datos.forEach((d,i)=>{
+txt+=`N°${i+1}
+Área:${d.area}
+Estado:${d.estado}
+Obs:${d.obs}
+Fecha:${d.fecha}
 
-    document.getElementById("salida").value = texto;
+`;
+});
+
+salida.value=txt;
 }
+
+/* INIT */
+cargarPersonal();
+cargarInspeccion();
 
 </script>
 
