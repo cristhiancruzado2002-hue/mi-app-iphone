@@ -1,599 +1,141 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SSOMA App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="icon" type="image/png" href="icono.png" />
-  <link rel="shortcut icon" type="image/png" href="icono.png" />
-  <link rel="apple-touch-icon" href="icono.png" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="SSOMA App" />
+<title>SSOMA App</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<!-- ICONO -->
+<link rel="icon" type="image/png" href="icono.png?v=3">
+<link rel="apple-touch-icon" href="icono.png?v=3">
 
-    body {
-      background: linear-gradient(180deg, #0f172a, #1e293b);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 20px;
-      color: white;
-    }
+<!-- COLOR APP -->
+<meta name="theme-color" content="#0f172a">
 
-    .app {
-      width: 100%;
-      max-width: 430px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 30px;
-      padding: 22px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(10px);
-    }
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-    .header {
-      text-align: center;
-      margin-bottom: 18px;
-    }
+/* CONTENEDOR PRINCIPAL */
+.app {
+    width: 320px;
+    background: #1f2937;
+    border-radius: 25px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    text-align: center;
+}
 
-    .header img {
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 22px;
-      background: white;
-      padding: 4px;
-      margin-bottom: 12px;
-    }
+/* LOGO */
+.logo {
+    width: 120px;
+    margin-bottom: 10px;
+}
 
-    .header h1 {
-      font-size: 30px;
-      margin-bottom: 6px;
-    }
+/* TITULO */
+h1 {
+    color: white;
+    margin: 10px 0 5px;
+}
 
-    .header p {
-      color: #cbd5e1;
-      font-size: 14px;
-    }
+/* SUBTITULO */
+.sub {
+    color: #9ca3af;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
-    }
+/* MENU */
+.menu {
+    background: #374151;
+    border-radius: 15px;
+    padding: 15px;
+}
 
-    .stat {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 12px;
-      text-align: center;
-    }
+/* BOTONES */
+button {
+    width: 45%;
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #e5e7eb;
+    cursor: pointer;
+    font-weight: bold;
+}
 
-    .stat b {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 4px;
-    }
+button:hover {
+    background: #d1d5db;
+}
 
-    .stat span {
-      font-size: 12px;
-      color: #cbd5e1;
-    }
+/* TEXTO */
+.content {
+    margin-top: 15px;
+    background: #374151;
+    padding: 10px;
+    border-radius: 15px;
+    color: white;
+    font-size: 14px;
+}
+</style>
 
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .tabs button {
-      border: none;
-      border-radius: 14px;
-      padding: 11px 8px;
-      background: #e2e8f0;
-      color: #0f172a;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .tabs button.active {
-      background: #38bdf8;
-    }
-
-    .screen {
-      display: none;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 22px;
-      padding: 18px;
-      margin-bottom: 14px;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    .screen h2 {
-      margin-bottom: 10px;
-      font-size: 20px;
-    }
-
-    .screen p {
-      color: #dbeafe;
-      line-height: 1.45;
-      margin-bottom: 10px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 14px;
-      margin-top: 12px;
-    }
-
-    label {
-      display: block;
-      margin: 10px 0 6px;
-      font-size: 14px;
-      font-weight: bold;
-      color: #e2e8f0;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 13px;
-      font-size: 15px;
-      outline: none;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 90px;
-    }
-
-    .btn {
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 13px;
-      margin-top: 10px;
-      background: #38bdf8;
-      color: #0f172a;
-      font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .btn.secondary {
-      background: #22c55e;
-      color: white;
-    }
-
-    .btn.danger {
-      background: #ef4444;
-      color: white;
-    }
-
-    .btn.gray {
-      background: #64748b;
-      color: white;
-    }
-
-    .list {
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .item {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 12px;
-    }
-
-    .item h3 {
-      font-size: 16px;
-      margin-bottom: 6px;
-    }
-
-    .item p {
-      margin-bottom: 4px;
-      font-size: 14px;
-    }
-
-    .photo-preview {
-      width: 100%;
-      border-radius: 14px;
-      margin-top: 10px;
-      display: none;
-    }
-
-    .result {
-      margin-top: 10px;
-      font-weight: bold;
-      text-align: center;
-      color: #7dd3fc;
-    }
-
-    .location-box {
-      margin-top: 10px;
-      padding: 12px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.08);
-      font-size: 14px;
-      color: #dbeafe;
-    }
-
-    .muted {
-      color: #cbd5e1;
-      font-size: 13px;
-    }
-  </style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="header">
-      <img src="icono.png" alt="Logo" />
-      <h1>SSOMA App</h1>
-      <p>Inspecciones, personal y reportes en una sola app</p>
+
+<div class="app">
+
+    <!-- LOGO -->
+    <img src="icono.png" class="logo">
+
+    <h1>SSOMA App</h1>
+    <div class="sub">Primera aplicación estilo iPhone</div>
+
+    <div class="menu">
+        <button onclick="cambiar('Inicio')">Inicio</button>
+        <button onclick="cambiar('Reportes')">Reportes</button>
+        <button onclick="cambiar('Personal')">Personal</button>
+        <button onclick="cambiar('Ajustes')">Ajustes</button>
+
+        <p id="estado">Estás en Inicio</p>
     </div>
 
-    <div class="stats">
-      <div class="stat">
-        <b id="statTrabajadores">0</b>
-        <span>Trabajadores</span>
-      </div>
-      <div class="stat">
-        <b id="statInspecciones">0</b>
-        <span>Inspecciones</span>
-      </div>
-      <div class="stat">
-        <b id="statReportes">0</b>
-        <span>Reportes</span>
-      </div>
+    <div class="content" id="contenido">
+        Bienvenido a tu aplicación SSOMA.
     </div>
 
-    <div class="tabs">
-      <button class="tab-btn active" onclick="openScreen('inicio', this)">Inicio</button>
-      <button class="tab-btn" onclick="openScreen('trabajadores', this)">Personal</button>
-      <button class="tab-btn" onclick="openScreen('inspecciones', this)">Inspec.</button>
-      <button class="tab-btn" onclick="openScreen('reportes', this)">Reportes</button>
-      <button class="tab-btn" onclick="openScreen('ajustes', this)">Ajustes</button>
-    </div>
+</div>
 
-    <div id="inicio" class="screen active">
-      <h2>Inicio</h2>
-      <p>Bienvenido. Esta versión ya permite registrar trabajadores, hacer inspecciones, tomar foto y obtener ubicación.</p>
+<script>
+function cambiar(seccion){
+    document.getElementById("estado").innerText = "Estás en " + seccion;
 
-      <div class="card">
-        <p><b>Funciones activas:</b></p>
-        <p>• Registro de personal</p>
-        <p>• Inspecciones SST</p>
-        <p>• Reportes rápidos</p>
-        <p>• Foto desde celular</p>
-        <p>• Ubicación GPS</p>
-      </div>
-    </div>
+    let texto = "";
 
-    <div id="trabajadores" class="screen">
-      <h2>Registro de trabajadores</h2>
-
-      <label>Nombre completo</label>
-      <input type="text" id="workerName" placeholder="Ejemplo: Juan Pérez" />
-
-      <label>Cargo</label>
-      <input type="text" id="workerRole" placeholder="Ejemplo: Operario de proceso" />
-
-      <label>Área</label>
-      <input type="text" id="workerArea" placeholder="Ejemplo: Producción" />
-
-      <button class="btn" onclick="saveWorker()">Guardar trabajador</button>
-      <div id="workerMsg" class="result"></div>
-
-      <div id="workersList" class="list"></div>
-    </div>
-
-    <div id="inspecciones" class="screen">
-      <h2>Inspecciones SST</h2>
-
-      <label>Área inspeccionada</label>
-      <input type="text" id="inspArea" placeholder="Ejemplo: Túneles / Proceso / Mantenimiento" />
-
-      <label>Observación</label>
-      <textarea id="inspObs" placeholder="Describe la observación encontrada"></textarea>
-
-      <label>Estado</label>
-      <select id="inspStatus">
-        <option value="Conforme">Conforme</option>
-        <option value="Observado">Observado</option>
-        <option value="Crítico">Crítico</option>
-      </select>
-
-      <label>Foto</label>
-      <input type="file" id="inspPhoto" accept="image/*" capture="environment" onchange="previewPhoto(event)" />
-      <img id="photoPreview" class="photo-preview" alt="Vista previa" />
-
-      <button class="btn secondary" onclick="getLocation()">Obtener ubicación</button>
-      <div id="locationBox" class="location-box">Ubicación no obtenida.</div>
-
-      <button class="btn" onclick="saveInspection()">Guardar inspección</button>
-      <div id="inspMsg" class="result"></div>
-
-      <div id="inspectionsList" class="list"></div>
-    </div>
-
-    <div id="reportes" class="screen">
-      <h2>Reportes</h2>
-      <p>Genera un resumen rápido de lo registrado en la app.</p>
-
-      <button class="btn secondary" onclick="generateReport()">Generar reporte</button>
-
-      <div class="card">
-        <p id="reportContent" class="muted">Aún no se genera ningún reporte.</p>
-      </div>
-    </div>
-
-    <div id="ajustes" class="screen">
-      <h2>Ajustes</h2>
-      <p>Aquí puedes borrar la información guardada en este dispositivo.</p>
-
-      <button class="btn danger" onclick="clearAllData()">Borrar todos los datos</button>
-      <div id="settingsMsg" class="result"></div>
-    </div>
-  </div>
-
-  <script>
-    let currentLatitude = "";
-    let currentLongitude = "";
-
-    function openScreen(screenId, btn) {
-      document.querySelectorAll(".screen").forEach(screen => {
-        screen.classList.remove("active");
-      });
-
-      document.querySelectorAll(".tab-btn").forEach(tab => {
-        tab.classList.remove("active");
-      });
-
-      document.getElementById(screenId).classList.add("active");
-      btn.classList.add("active");
+    if(seccion === "Inicio"){
+        texto = "Bienvenido a tu aplicación SSOMA.";
+    }
+    if(seccion === "Reportes"){
+        texto = "Aquí podrás ver reportes de seguridad.";
+    }
+    if(seccion === "Personal"){
+        texto = "Lista de trabajadores próximamente.";
+    }
+    if(seccion === "Ajustes"){
+        texto = "Configuraciones de la app.";
     }
 
-    function getWorkers() {
-      return JSON.parse(localStorage.getItem("workers") || "[]");
-    }
+    document.getElementById("contenido").innerText = texto;
+}
+</script>
 
-    function getInspections() {
-      return JSON.parse(localStorage.getItem("inspections") || "[]");
-    }
-
-    function getReports() {
-      return JSON.parse(localStorage.getItem("reports") || "[]");
-    }
-
-    function saveWorker() {
-      const name = document.getElementById("workerName").value.trim();
-      const role = document.getElementById("workerRole").value.trim();
-      const area = document.getElementById("workerArea").value.trim();
-      const msg = document.getElementById("workerMsg");
-
-      if (!name || !role || !area) {
-        msg.innerText = "Completa todos los campos.";
-        return;
-      }
-
-      const workers = getWorkers();
-      workers.push({
-        name,
-        role,
-        area
-      });
-
-      localStorage.setItem("workers", JSON.stringify(workers));
-
-      document.getElementById("workerName").value = "";
-      document.getElementById("workerRole").value = "";
-      document.getElementById("workerArea").value = "";
-      msg.innerText = "Trabajador guardado correctamente.";
-
-      renderWorkers();
-      updateStats();
-    }
-
-    function renderWorkers() {
-      const list = document.getElementById("workersList");
-      const workers = getWorkers();
-
-      if (workers.length === 0) {
-        list.innerHTML = '<div class="item"><p>No hay trabajadores registrados.</p></div>';
-        return;
-      }
-
-      list.innerHTML = workers.map((w, i) => `
-        <div class="item">
-          <h3>${w.name}</h3>
-          <p><b>Cargo:</b> ${w.role}</p>
-          <p><b>Área:</b> ${w.area}</p>
-          <button class="btn danger" onclick="deleteWorker(${i})">Eliminar</button>
-        </div>
-      `).join("");
-    }
-
-    function deleteWorker(index) {
-      const workers = getWorkers();
-      workers.splice(index, 1);
-      localStorage.setItem("workers", JSON.stringify(workers));
-      renderWorkers();
-      updateStats();
-    }
-
-    function previewPhoto(event) {
-      const file = event.target.files[0];
-      const preview = document.getElementById("photoPreview");
-
-      if (!file) {
-        preview.style.display = "none";
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = "block";
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function getLocation() {
-      const box = document.getElementById("locationBox");
-
-      if (!navigator.geolocation) {
-        box.innerText = "Tu navegador no admite ubicación.";
-        return;
-      }
-
-      box.innerText = "Obteniendo ubicación...";
-
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          currentLatitude = position.coords.latitude.toFixed(6);
-          currentLongitude = position.coords.longitude.toFixed(6);
-          box.innerText = `Latitud: ${currentLatitude} | Longitud: ${currentLongitude}`;
-        },
-        function() {
-          box.innerText = "No se pudo obtener la ubicación.";
-        }
-      );
-    }
-
-    function saveInspection() {
-      const area = document.getElementById("inspArea").value.trim();
-      const obs = document.getElementById("inspObs").value.trim();
-      const status = document.getElementById("inspStatus").value;
-      const preview = document.getElementById("photoPreview").src;
-      const msg = document.getElementById("inspMsg");
-
-      if (!area || !obs) {
-        msg.innerText = "Completa área y observación.";
-        return;
-      }
-
-      const inspections = getInspections();
-      inspections.push({
-        area,
-        obs,
-        status,
-        photo: preview || "",
-        lat: currentLatitude,
-        lng: currentLongitude,
-        date: new Date().toLocaleString()
-      });
-
-      localStorage.setItem("inspections", JSON.stringify(inspections));
-
-      document.getElementById("inspArea").value = "";
-      document.getElementById("inspObs").value = "";
-      document.getElementById("inspStatus").value = "Conforme";
-      document.getElementById("inspPhoto").value = "";
-      document.getElementById("photoPreview").style.display = "none";
-      document.getElementById("photoPreview").src = "";
-      document.getElementById("locationBox").innerText = "Ubicación no obtenida.";
-      currentLatitude = "";
-      currentLongitude = "";
-      msg.innerText = "Inspección guardada correctamente.";
-
-      renderInspections();
-      updateStats();
-    }
-
-    function renderInspections() {
-      const list = document.getElementById("inspectionsList");
-      const inspections = getInspections();
-
-      if (inspections.length === 0) {
-        list.innerHTML = '<div class="item"><p>No hay inspecciones registradas.</p></div>';
-        return;
-      }
-
-      list.innerHTML = inspections.map((ins, i) => `
-        <div class="item">
-          <h3>${ins.area}</h3>
-          <p><b>Estado:</b> ${ins.status}</p>
-          <p><b>Observación:</b> ${ins.obs}</p>
-          <p><b>Fecha:</b> ${ins.date}</p>
-          <p><b>Ubicación:</b> ${ins.lat || "-"} / ${ins.lng || "-"}</p>
-          ${ins.photo ? `<img src="${ins.photo}" style="width:100%;margin-top:10px;border-radius:12px;">` : ""}
-          <button class="btn danger" onclick="deleteInspection(${i})">Eliminar</button>
-        </div>
-      `).join("");
-    }
-
-    function deleteInspection(index) {
-      const inspections = getInspections();
-      inspections.splice(index, 1);
-      localStorage.setItem("inspections", JSON.stringify(inspections));
-      renderInspections();
-      updateStats();
-    }
-
-    function generateReport() {
-      const workers = getWorkers();
-      const inspections = getInspections();
-      const reports = getReports();
-
-      const text = `
-Trabajadores registrados: ${workers.length}
-Inspecciones registradas: ${inspections.length}
-Última actualización: ${new Date().toLocaleString()}
-      `.trim();
-
-      document.getElementById("reportContent").innerText = text;
-
-      reports.push({
-        text,
-        date: new Date().toLocaleString()
-      });
-
-      localStorage.setItem("reports", JSON.stringify(reports));
-      updateStats();
-    }
-
-    function clearAllData() {
-      localStorage.removeItem("workers");
-      localStorage.removeItem("inspections");
-      localStorage.removeItem("reports");
-
-      document.getElementById("settingsMsg").innerText = "Todos los datos fueron eliminados.";
-      document.getElementById("reportContent").innerText = "Aún no se genera ningún reporte.";
-
-      renderWorkers();
-      renderInspections();
-      updateStats();
-    }
-
-    function updateStats() {
-      document.getElementById("statTrabajadores").innerText = getWorkers().length;
-      document.getElementById("statInspecciones").innerText = getInspections().length;
-      document.getElementById("statReportes").innerText = getReports().length;
-    }
-
-    renderWorkers();
-    renderInspections();
-    updateStats();
-  </script>
 </body>
 </html>
